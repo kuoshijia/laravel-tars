@@ -9,6 +9,12 @@
       "email": "email@example.com"
     }
   ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/kuoshijia/tars-server"
+    }
+  ],
   "require": {
     "illuminate/console": "~5",
     "illuminate/support": "~5",
