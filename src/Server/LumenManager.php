@@ -3,9 +3,9 @@ namespace Lxj\Laravel\Tars\Server;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
+use Lxj\Laravel\Tars\Response;
 use SwooleTW\Http\Server\Sandbox;
 use SwooleTW\Http\Transformers\Request;
-use SwooleTW\Http\Transformers\Response;
 use Throwable;
 
 class LumenManager extends \SwooleTW\Http\Server\Manager
@@ -16,11 +16,24 @@ class LumenManager extends \SwooleTW\Http\Server\Manager
             $container = app();
         }
         parent::__construct($container, $framework, $basePath);
+
+        // prepare laravel app
+        $this->getApplication();
+
+        // bind after setting laravel app
+        $this->bindToLaravelApp();
+
+        // prepare websocket handler and routes
+        if ($this->isServerWebsocket) {
+            $this->prepareWebsocketHandler();
+            $this->loadWebsocketRoutes();
+        }
+
     }
 
     protected $events = [];
 
-    public function OnRequest($illuminateRequest, $swooleResponse)
+    public function OnRequest($illuminateRequest, $tarsResponse)
     {
         $this->resetOnRequest();
         $sandbox = $this->app->make(Sandbox::class);
@@ -34,10 +47,11 @@ class LumenManager extends \SwooleTW\Http\Server\Manager
             $sandbox->enable();
 
             // handle request via laravel/lumen's dispatcher
+            /** @var \Illuminate\Http\Response $illuminateResponse */
             $illuminateResponse = $sandbox->run($illuminateRequest);
-            
+
             // send response
-            Response::make($illuminateResponse, $swooleResponse)->send();
+            Response::make($illuminateResponse, $tarsResponse)->send();
 
         } catch (Throwable $e) {
             try {

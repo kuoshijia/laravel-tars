@@ -18,20 +18,10 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class LumenController extends Controller
 {
-    /** @var LumenManager */
-    protected static $manager;
-    public function __construct(\Tars\core\Request $request, \Tars\core\Response $response)
-    {
-        parent::__construct($request, $response);
-        if (!static::$manager) {
-            static::$manager = app(LumenManager::class);
-        }
-    }
-
     public function actionRoute()
     {
         $illuminateRequest = Request::make($this->getRequest())->toIlluminate();
-        static::$manager->OnRequest($illuminateRequest,$this->getResponse());
+        app(LumenManager::class)->OnRequest($illuminateRequest,$this->getResponse());
     }
-
+    
 }
