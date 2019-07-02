@@ -10,15 +10,19 @@ use Throwable;
 
 class LumenManager extends \SwooleTW\Http\Server\Manager
 {
+    protected static $application = null;
     public function __construct(Container $container = null, $framework = 'lumen', $basePath = null)
     {
         if (is_null($container)) {
             $container = app();
         }
         parent::__construct($container, $framework, $basePath);
-
-        // prepare laravel app
-        $this->getApplication();
+        if ($this->app = static::$application) {
+//            echo get_class($this->app);
+        } else {
+            $this->getApplication();
+            static::$application = $this->app;
+        }
 
         // bind after setting laravel app
         $this->bindToLaravelApp();
@@ -36,6 +40,7 @@ class LumenManager extends \SwooleTW\Http\Server\Manager
     public function OnRequest($illuminateRequest, $tarsResponse)
     {
         $this->resetOnRequest();
+        /** @var Sandbox $sandbox */
         $sandbox = $this->app->make(Sandbox::class);
 
         try {
