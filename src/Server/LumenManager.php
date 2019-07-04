@@ -17,6 +17,7 @@ class LumenManager extends \SwooleTW\Http\Server\Manager
             $container = app();
         }
         parent::__construct($container, $framework, $basePath);
+        //APP只启动一次，剩下的靠Sandbox
         if ($this->app = static::$application) {
 //            echo get_class($this->app);
         } else {
@@ -71,6 +72,7 @@ class LumenManager extends \SwooleTW\Http\Server\Manager
             }
         } finally {
             // disable and recycle sandbox resource
+            //清除context的数据
             $sandbox->disable();
         }
     }
