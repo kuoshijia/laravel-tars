@@ -6,6 +6,7 @@ use Illuminate\Auth\AuthServiceProvider;
 use Illuminate\Contracts\Cookie\QueueingFactory;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Facade;
+use Laravel\Lumen\Application;
 use Lxj\Laravel\Tars\Boot;
 use Lxj\Laravel\Tars\Controller;
 use Lxj\Laravel\Tars\Request;
@@ -21,7 +22,9 @@ class LumenController extends Controller
     public function actionRoute()
     {
         $illuminateRequest = Request::make($this->getRequest())->toIlluminate();
-        app(LumenManager::class)->OnRequest($illuminateRequest,$this->getResponse());
+        /** @var LumenManager $app */
+        $app = app(LumenManager::class);
+        $app->OnRequest($illuminateRequest,$this->getResponse());
     }
     
 }
