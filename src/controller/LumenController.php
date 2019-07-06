@@ -3,6 +3,7 @@
 namespace Lxj\Laravel\Tars\controller;
 
 use Illuminate\Auth\AuthServiceProvider;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Cookie\QueueingFactory;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Facade;
@@ -22,10 +23,13 @@ class LumenController extends Controller
     public function actionRoute()
     {
         try {
+            /** @var \Illuminate\Http\Request $illuminateRequest */
             $illuminateRequest = Request::make($this->getRequest())->toIlluminate();
-            /** @var LumenManager $app */
-            $app = app(LumenManager::class);
-            $app->OnRequest($illuminateRequest, $this->getResponse());
+            
+
+            /** @var LumenManager $manager */
+            $manager = app(LumenManager::class);
+            $manager->OnRequest($illuminateRequest, $this->getResponse());
         } catch (\Throwable $e) {
             $this->status(500);
             $this->sendRaw($e->getMessage() . '|' . $e->getTraceAsString());

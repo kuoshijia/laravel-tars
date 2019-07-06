@@ -10,39 +10,22 @@ use Throwable;
 
 class LumenManager extends \SwooleTW\Http\Server\Manager
 {
-    protected static $application = null;
-    public function __construct(Container $container = null, $framework = 'lumen', $basePath = null)
+    public function __construct(Container $container, $framework = 'lumen', $basePath = null)
     {
-        if (is_null($container)) {
-            $container = app();
-        }
-        parent::__construct($container, $framework, $basePath);
-        //APP只启动一次，剩下的靠Sandbox
-        if ($this->app = static::$application) {
-//            echo get_class($this->app);
-        } else {
-            $this->getApplication();
-            static::$application = $this->app;
-        }
-
-        // bind after setting laravel app
-        $this->bindToLaravelApp();
-
-        // prepare websocket handler and routes
-        if ($this->isServerWebsocket) {
-            $this->prepareWebsocketHandler();
-            $this->loadWebsocketRoutes();
-        }
-
+//        parent::__construct($container, $framework, $basePath);
     }
 
-    protected $events = [];
-
+    /**
+     * @Note:
+     * @param \Illuminate\Http\Request $illuminateRequest
+     * @param \Swoole\Http\Response $tarsResponse
+     */
     public function OnRequest($illuminateRequest, $tarsResponse)
     {
         $this->resetOnRequest();
+
         /** @var Sandbox $sandbox */
-        $sandbox = $this->app->make(Sandbox::class);
+        $sandbox = app(Sandbox::class);
 
         try {
 
@@ -51,7 +34,7 @@ class LumenManager extends \SwooleTW\Http\Server\Manager
 
             // enable sandbox
             $sandbox->enable();
-
+            
             // handle request via laravel/lumen's dispatcher
             /** @var \Illuminate\Http\Response $illuminateResponse */
             $illuminateResponse = $sandbox->run($illuminateRequest);
