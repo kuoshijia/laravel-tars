@@ -21,10 +21,15 @@ class LumenController extends Controller
 {
     public function actionRoute()
     {
-        $illuminateRequest = Request::make($this->getRequest())->toIlluminate();
-        /** @var LumenManager $app */
-        $app = app(LumenManager::class);
-        $app->OnRequest($illuminateRequest,$this->getResponse());
+        try {
+            $illuminateRequest = Request::make($this->getRequest())->toIlluminate();
+            /** @var LumenManager $app */
+            $app = app(LumenManager::class);
+            $app->OnRequest($illuminateRequest, $this->getResponse());
+        } catch (\Throwable $e) {
+            $this->status(500);
+            $this->sendRaw($e->getMessage() . '|' . $e->getTraceAsString());
+        }
     }
     
 }
